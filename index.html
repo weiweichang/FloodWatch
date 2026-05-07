@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FloodWatch MY — Flood &amp; Weather Monitor</title>
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css?v=18" />
+</head>
+<body>
+
+<!-- Phone frame wrapper: constrained in force-mobile on wide screens -->
+<div id="phone-frame">
+
+<!-- ===== TOP NAVBAR ===== -->
+<header class="topbar" role="banner">
+  <div class="topbar-inner">
+    <div class="topbar-brand">
+      <svg width="28" height="28" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+        <circle cx="18" cy="18" r="18" fill="rgba(59,130,246,0.12)"/>
+        <path d="M18 6L8 11V19c0 5.5 4.1 10.4 10 11.8C23.9 29.4 28 24.5 28 19V11L18 6z" fill="rgba(59,130,246,0.2)" stroke="#3b82f6" stroke-width="1.5"/>
+        <path d="M15 19l9-9" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="21" cy="13" r="2" fill="#fbbf24"/>
+        <path d="M9 29c1.5-1 3-1.5 4.5-1s3 1.5 4.5 1 3-1.5 4.5-1" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div class="brand-text">
+        <span class="brand-name">FloodWatch</span>
+        <span class="brand-sub">Malaysia</span>
+      </div>
+    </div>
+
+    <!-- Desktop nav tabs -->
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <button class="nav-tab active" data-tab="places" aria-current="page">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span data-i18n="navPlaces">My Places</span>
+      </button>
+      <button class="nav-tab" data-tab="alerts">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span data-i18n="navAlerts">Alerts</span>
+        <span class="nav-badge" id="nav-alert-badge" style="display:none;"></span>
+      </button>
+      <button class="nav-tab" data-tab="emergency">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.56-.56a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+        <span data-i18n="navEmergency">Emergency</span>
+      </button>
+      <button class="nav-tab" data-tab="settings">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <span data-i18n="navSettings">Settings</span>
+      </button>
+    </nav>
+
+    <div class="topbar-actions">
+      <!-- Language switcher — hidden on mobile (≤768px), moved to Settings tab -->
+      <div class="lang-switcher topbar-lang" role="group" aria-label="Language selection">
+        <button class="lang-btn active" data-lang="en" aria-label="English" aria-pressed="true">EN</button>
+        <button class="lang-btn" data-lang="bm" aria-label="Bahasa Melayu" aria-pressed="false">BM</button>
+        <button class="lang-btn" data-lang="zh" aria-label="简体中文" aria-pressed="false">中文</button>
+      </div>
+      <!-- View switcher — hidden on actual mobile (≤640px) -->
+      <button class="icon-btn view-toggle-btn" id="view-toggle-btn" aria-label="Switch to mobile view" data-i18n-title="viewToggleToMobile" title="Switch to mobile view">
+        <svg class="view-icon-mobile" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
+        <svg class="view-icon-desktop" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:none;"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
+      </button>
+      <!-- Refresh button -->
+      <button class="icon-btn" id="refresh-btn" aria-label="Refresh data" data-i18n-title="refresh">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      </button>
+      <!-- Add Place button: full text on desktop, icon-only on tablet, FAB on mobile -->
+      <button class="btn btn-primary topbar-add-btn" id="add-place-btn" aria-label="Add a new place to monitor">
+        <svg class="add-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span class="add-label" data-i18n="addPlace">Add Place</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== FEED STATUS BAR ===== -->
+<div class="feed-status-bar" id="feed-status-bar" aria-live="polite" aria-atomic="true">
+  <div class="feed-status-inner">
+    <div class="feed-pill" id="feed-met">
+      <span class="feed-dot"></span>
+      <span data-i18n="feedMET">MET Malaysia</span>
+      <span class="feed-time" id="feed-met-time"></span>
+    </div>
+    <div class="feed-pill" id="feed-jps">
+      <span class="feed-dot"></span>
+      <span data-i18n="feedJPS">Public Infobanjir (JPS)</span>
+      <span class="feed-time" id="feed-jps-time"></span>
+    </div>
+    <span class="feed-disclaimer" data-i18n="feedDisclaimer">Support tool only — always follow official emergency instructions</span>
+  </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="site-main" id="site-main">
+  <div class="container">
+
+    <!-- *** TAB: MY PLACES *** -->
+    <section class="tab-panel active" id="tab-places" role="tabpanel" aria-labelledby="nav-tab-places">
+
+      <!-- Summary bar (rendered by JS) -->
+      <div id="summary-bar" aria-live="polite"></div>
+
+      <!-- Notification permission banner -->
+      <div class="notif-banner" id="notif-banner" role="button" tabindex="0" style="display:none;"
+           aria-label="Enable browser alerts for flood risk changes">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span><b data-i18n="notifTitle">Enable browser alerts</b> — <span data-i18n="notifDesc">get notified when flood risk changes at your saved places</span></span>
+        <button class="nb-btn" id="notif-btn" data-i18n="notifBtn">Enable</button>
+      </div>
+
+      <!-- Place grid (rendered by JS) -->
+      <div id="place-grid" role="list" aria-label="Monitored places"></div>
+
+      <!-- Empty state -->
+      <div class="empty-state" id="empty-state" style="display:none;" aria-live="polite">
+        <div class="empty-icon" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="empty-title" data-i18n="emptyTitle">No places yet</div>
+        <div class="empty-desc" data-i18n="emptyDesc">Add your home, office, or family locations to monitor weather and flood alerts in real time.</div>
+        <button class="btn btn-primary" id="empty-add-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span data-i18n="addFirstPlace">Add Your First Place</span>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- *** TAB: ALERTS *** -->
+    <section class="tab-panel" id="tab-alerts" role="tabpanel" aria-labelledby="nav-tab-alerts" style="display:none;">
+      <div class="tab-header">
+        <h2 class="tab-title" data-i18n="navAlerts">Alerts</h2>
+        <p class="tab-sub" data-i18n="alertsDesc">Risk changes detected at your saved places</p>
+      </div>
+      <div id="alert-list" role="list" aria-live="polite" aria-label="Alert history"></div>
+      <div id="alert-empty" class="empty-state" style="display:none;">
+        <div class="empty-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        </div>
+        <div class="empty-title" data-i18n="alertsEmpty">No alerts yet</div>
+        <div class="empty-desc" data-i18n="alertsEmptyDesc">Risk changes at your saved places will appear here.</div>
+      </div>
+    </section>
+
+    <!-- *** TAB: EMERGENCY *** -->
+    <section class="tab-panel" id="tab-emergency" role="tabpanel" aria-labelledby="nav-tab-emergency" style="display:none;">
+      <div class="tab-header">
+        <h2 class="tab-title" data-i18n="navEmergency">Emergency</h2>
+        <p class="tab-sub" data-i18n="emergencyDesc">Official Malaysian emergency contacts</p>
+      </div>
+
+      <div class="emergency-cards">
+        <!-- Tier 1: Critical -->
+        <div class="emg-card urgent">
+          <div class="emg-tier" data-i18n="emgTierCritical">Life Emergency</div>
+          <div class="emg-items">
+            <a class="emg-item" href="tel:999" aria-label="Call 999 — Police, Fire, Ambulance, APM">
+              <div class="emg-number">999</div>
+              <div class="emg-info">
+                <div class="emg-name" data-i18n="emg999Name">Police / Fire / Ambulance / APM</div>
+                <div class="emg-desc" data-i18n="emg999Desc">Main emergency line · MERS 999 system</div>
+              </div>
+              <svg class="emg-call-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.56-.56a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+            </a>
+            <a class="emg-item" href="tel:112" aria-label="Call 112 — Mobile emergency, no credit needed">
+              <div class="emg-number">112</div>
+              <div class="emg-info">
+                <div class="emg-name" data-i18n="emg112Name">Mobile Emergency</div>
+                <div class="emg-desc" data-i18n="emg112Desc">Works without credit or SIM · roaming OK</div>
+              </div>
+              <svg class="emg-call-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.56-.56a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Tier 2: Disaster -->
+        <div class="emg-card flood">
+          <div class="emg-tier" data-i18n="emgTierDisaster">Flood &amp; Disaster</div>
+          <div class="emg-items">
+            <a class="emg-item" href="tel:0380642400" aria-label="Call NADMA NDCC 03-8064 2400">
+              <div class="emg-number">03-8064 2400</div>
+              <div class="emg-info">
+                <div class="emg-name">NADMA NDCC</div>
+                <div class="emg-desc" data-i18n="emgNADMADesc">National Disaster Control Centre · 24hr</div>
+              </div>
+              <svg class="emg-call-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.56-.56a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Tier 3: Weather -->
+        <div class="emg-card watch">
+          <div class="emg-tier" data-i18n="emgTierWeather">Weather &amp; Technical</div>
+          <div class="emg-items">
+            <a class="emg-item" href="tel:0379678116" aria-label="Call NWGOC Weather and Earthquake 03-7967 8116">
+              <div class="emg-number">03-7967 8116</div>
+              <div class="emg-info">
+                <div class="emg-name" data-i18n="emgNWGOCName">Weather &amp; Earthquake Hotline</div>
+                <div class="emg-desc" data-i18n="emgNWGOCDesc">NWGOC — 24hr technical inquiries</div>
+              </div>
+              <svg class="emg-call-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.56-.56a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Key links -->
+        <div class="emg-links-card">
+          <div class="emg-tier" data-i18n="emgTierLinks">Key Resources</div>
+          <div class="emg-link-list">
+            <a class="emg-link-item" href="https://infobencanajkmv2.jkm.gov.my/landing/" target="_blank" rel="noopener">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+              <span data-i18n="emgLinkPPS">Find nearest evacuation centre (PPS)</span>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ext-icon" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+            <a class="emg-link-item" href="https://publicinfobanjir.water.gov.my" target="_blank" rel="noopener">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" aria-hidden="true"><path d="M3 6c0 0 2-2 5-2s5 2 8 2 5-2 5-2v14c0 0-2 2-5 2s-5-2-8-2-5 2-5 2V6z"/></svg>
+              <span data-i18n="emgLinkJPS">Live river levels — Public Infobanjir (JPS)</span>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ext-icon" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+            <a class="emg-link-item" href="https://www.nadma.gov.my" target="_blank" rel="noopener">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span data-i18n="emgLinkNADMA">NADMA official situation reports</span>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ext-icon" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer-box" role="note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <p data-i18n="disclaimer">FloodWatch MY is a community support tool using official Malaysian government data. It does not replace official emergency instructions. During a flood emergency, always follow directions from NADMA, local authorities, and emergency services.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- *** TAB: SETTINGS *** -->
+    <section class="tab-panel" id="tab-settings" role="tabpanel" aria-labelledby="nav-tab-settings" style="display:none;">
+      <div class="tab-header">
+        <h2 class="tab-title" data-i18n="navSettings">Settings</h2>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-label" data-i18n="settingsLang">Language</div>
+        <div class="settings-lang-btns" role="group" aria-label="Select language">
+          <button class="settings-lang-btn active" data-lang="en">English</button>
+          <button class="settings-lang-btn" data-lang="bm">Bahasa Melayu</button>
+          <button class="settings-lang-btn" data-lang="zh">简体中文</button>
+        </div>
+      </div>
+
+      <!-- View switcher in Settings (visible on tablet ≤768px, hidden on desktop) -->
+      <div class="settings-group settings-view-group" id="settings-view-group">
+        <div class="settings-label" data-i18n="settingsView">Display</div>
+        <div class="settings-view-btns" role="group" aria-label="Display mode">
+          <button class="settings-view-btn" id="settings-view-desktop" data-view="desktop">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
+            <span data-i18n="viewDesktop">Desktop</span>
+          </button>
+          <button class="settings-view-btn" id="settings-view-mobile" data-view="mobile">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
+            <span data-i18n="viewMobile">Mobile</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-label" data-i18n="settingsNotif">Browser Notifications</div>
+        <div class="notif-banner settings-notif-banner" id="settings-notif-banner" style="display:none;"
+             role="button" tabindex="0" aria-label="Enable browser alerts">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span data-i18n="notifDesc">Get notified when flood risk changes at your saved places</span>
+          <button class="nb-btn" id="settings-notif-btn" data-i18n="notifBtn">Enable</button>
+        </div>
+        <div class="settings-notif-status" id="settings-notif-status"></div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-label" data-i18n="settingsAbout">About</div>
+        <div class="about-box">
+          <p data-i18n="aboutText">FloodWatch MY uses live data from MET Malaysia (weather warnings) and Public Infobanjir/JPS (river gauge stations). Data is refreshed every 5 minutes. Elevation data from Open-Elevation API. This tool is for informational purposes only.</p>
+          <div class="about-sources">
+            <a href="https://www.met.gov.my" target="_blank" rel="noopener" class="source-badge met">MET Malaysia</a>
+            <a href="https://publicinfobanjir.water.gov.my" target="_blank" rel="noopener" class="source-badge jps">Public Infobanjir</a>
+            <a href="https://www.nadma.gov.my" target="_blank" rel="noopener" class="source-badge nadma">NADMA</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group danger-zone">
+        <div class="settings-label" data-i18n="settingsDanger">Data</div>
+        <button class="btn btn-danger" id="clear-data-btn" data-i18n="clearData">Clear all saved places</button>
+      </div>
+    </section>
+
+  </div><!-- /container -->
+</main>
+
+<!-- ===== MOBILE BOTTOM NAV ===== -->
+<nav class="mobile-nav" aria-label="Main navigation">
+  <button class="mobile-nav-btn active" data-tab="places" aria-current="page" aria-label="My Places">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span data-i18n="navPlaces">My Places</span>
+  </button>
+  <button class="mobile-nav-btn" data-tab="alerts" aria-label="Alerts">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    <span data-i18n="navAlerts">Alerts</span>
+    <span class="mobile-badge" id="mobile-alert-badge" style="display:none;"></span>
+  </button>
+  <button class="mobile-nav-btn" data-tab="emergency" aria-label="Emergency contacts">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.56-.56a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+    <span data-i18n="navEmergency">Emergency</span>
+  </button>
+  <button class="mobile-nav-btn" data-tab="settings" aria-label="Settings">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    <span data-i18n="navSettings">Settings</span>
+  </button>
+</nav>
+
+<!-- FAB: Add Place (mobile only) -->
+<button class="fab-add" id="fab-add-btn" aria-label="Add a new place to monitor">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+</div><!-- /#phone-frame -->
+
+<!-- ===== ADD PLACE MODAL ===== -->
+<div id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display:none;">
+  <div class="modal" role="document">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title" data-i18n="modalTitle">Add a Place</div>
+        <div class="modal-sub" data-i18n="modalSub">Save a location to monitor for weather and flood alerts</div>
+      </div>
+      <button class="modal-close" id="modal-close-btn" aria-label="Close dialog">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="add-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" data-i18n="formType">Type</label>
+        <div class="type-grid" id="type-grid" role="group" aria-label="Place type">
+          <button type="button" class="type-chip active" data-type="home" aria-pressed="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span data-i18n="typeHome">Home</span>
+          </button>
+          <button type="button" class="type-chip" data-type="office" aria-pressed="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+            <span data-i18n="typeOffice">Office</span>
+          </button>
+          <button type="button" class="type-chip" data-type="family" aria-pressed="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            <span data-i18n="typeFamily">Family</span>
+          </button>
+          <button type="button" class="type-chip" data-type="school" aria-pressed="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            <span data-i18n="typeSchool">School</span>
+          </button>
+          <button type="button" class="type-chip" data-type="other" aria-pressed="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span data-i18n="typeOther">Other</span>
+          </button>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="input-name" data-i18n="formName">Name *</label>
+          <input type="text" class="form-input" id="input-name" data-i18n-placeholder="namePh" placeholder="e.g. Home, Office" required autocomplete="off" />
+          <div class="field-error" id="err-name" role="alert" aria-live="polite"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="input-address" data-i18n="formAddress">Address *</label>
+          <input type="text" class="form-input" id="input-address" data-i18n-placeholder="addressPh" placeholder="e.g. Jalan Utama 12, PJ" required autocomplete="street-address" />
+          <div class="field-error" id="err-address" role="alert" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="input-district" data-i18n="formDistrict">District *</label>
+          <input type="text" class="form-input" id="input-district" data-i18n-placeholder="districtPh" placeholder="e.g. Petaling" required autocomplete="off" />
+          <div class="field-error" id="err-district" role="alert" aria-live="polite"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="input-state" data-i18n="formState">State *</label>
+          <select class="form-select" id="input-state" aria-required="true">
+            <option value="SEL">Selangor</option>
+            <option value="WLH">W.P. KL</option>
+            <option value="PTJ">Putrajaya</option>
+            <option value="JHR">Johor</option>
+            <option value="KDH">Kedah</option>
+            <option value="KEL">Kelantan</option>
+            <option value="MLK">Melaka</option>
+            <option value="NSN">Negeri Sembilan</option>
+            <option value="PHG">Pahang</option>
+            <option value="PNG">Pulau Pinang</option>
+            <option value="PRK">Perak</option>
+            <option value="SAB">Sabah</option>
+            <option value="SRK">Sarawak</option>
+            <option value="TRG">Terengganu</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Advanced: coordinates (collapsed) -->
+      <details class="coord-details" id="coord-details">
+        <summary class="coord-summary" data-i18n="coordAdvanced">Advanced: Coordinates (optional)</summary>
+        <div class="coord-body">
+          <div class="form-row" style="margin-bottom:0;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="input-lat" data-i18n="formLat">Latitude</label>
+              <input type="number" step="any" class="form-input" id="input-lat" placeholder="3.1390" value="3.1390" aria-describedby="coord-hint" />
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="input-lng" data-i18n="formLng">Longitude</label>
+              <input type="number" step="any" class="form-input" id="input-lng" placeholder="101.6869" value="101.6869" aria-describedby="coord-hint" />
+            </div>
+          </div>
+          <div class="form-hint" id="coord-hint" style="margin-top:8px;" data-i18n="coordHint">Coordinates used for nearest river gauge lookup. KL centre is prefilled.</div>
+        </div>
+      </details>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" id="modal-cancel-btn" data-i18n="cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="add-submit-btn" data-i18n="saveMonitor">Save &amp; Monitor</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== DETAIL DRAWER ===== -->
+<div id="drawer-overlay" role="dialog" aria-modal="true" aria-labelledby="drawer-title" style="display:none;">
+  <div class="drawer" role="document">
+    <button class="drawer-close" id="drawer-close-btn" aria-label="Close panel">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<!-- ===== CONFIRM MODAL ===== -->
+<div id="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-title-el">
+  <div id="confirm-sheet">
+    <div class="confirm-title" id="confirm-title-el" data-i18n="confirmTitle">Remove this place?</div>
+    <div class="confirm-desc" data-i18n="confirmDesc">This location will no longer be monitored for weather and flood alerts.</div>
+    <div class="confirm-btns">
+      <button id="confirm-cancel" data-i18n="cancel">Cancel</button>
+      <button id="confirm-ok" data-i18n="confirmOk">Remove Place</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ONBOARDING TOOLTIP ===== -->
+<div id="onboarding-overlay" role="dialog" aria-modal="true" aria-labelledby="ob-title" style="display:none;">
+  <div class="onboarding-sheet" id="onboarding-sheet">
+    <div class="ob-step active" data-step="0">
+      <div class="ob-icon" aria-hidden="true">🛡️</div>
+      <div class="ob-title" id="ob-title" data-i18n="obTitle0">Welcome to FloodWatch MY</div>
+      <div class="ob-desc" data-i18n="obDesc0">Monitor flood and weather alerts for your saved locations using live Malaysian government data.</div>
+    </div>
+    <div class="ob-step" data-step="1">
+      <div class="ob-icon" aria-hidden="true">🟡</div>
+      <div class="ob-title" data-i18n="obTitle1">What does "Watch" mean?</div>
+      <div class="ob-desc" data-i18n="obDesc1">MET Malaysia has issued a weather warning for this area — such as heavy rain or thunderstorms. Monitor conditions and prepare. No immediate danger yet.</div>
+    </div>
+    <div class="ob-step" data-step="2">
+      <div class="ob-icon" aria-hidden="true">🟠</div>
+      <div class="ob-title" data-i18n="obTitle2">What does "Flood Alert" mean?</div>
+      <div class="ob-desc" data-i18n="obDesc2">A flood-specific warning is active. Check water levels at Public Infobanjir. Know your nearest evacuation centre (PPS) and be ready to move.</div>
+    </div>
+    <div class="ob-step" data-step="3">
+      <div class="ob-icon" aria-hidden="true">🔴</div>
+      <div class="ob-title" data-i18n="obTitle3">What does "High Urgency" mean?</div>
+      <div class="ob-desc" data-i18n="obDesc3">Immediate risk. Call 999 if in danger. Move to higher ground. Do not drive through flooded roads. Follow NADMA official guidance.</div>
+    </div>
+    <div class="ob-step" data-step="4">
+      <div class="ob-icon" aria-hidden="true">📍</div>
+      <div class="ob-title" data-i18n="obTitle4">Nearest river gauges</div>
+      <div class="ob-desc" data-i18n="obDesc4">FloodWatch shows the closest JPS river gauge stations to your saved places. Tap "Check live water levels" to see real-time readings on Public Infobanjir.</div>
+    </div>
+    <div class="ob-nav">
+      <div class="ob-dots" id="ob-dots" aria-hidden="true"></div>
+      <div class="ob-btns">
+        <button class="btn btn-ghost" id="ob-skip" data-i18n="obSkip">Skip</button>
+        <button class="btn btn-primary" id="ob-next" data-i18n="obNext">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <span data-i18n="footerCopy">© 2026 FloodWatch MY — Data from official Malaysian government sources only</span>
+    <div class="footer-links">
+      <a href="https://www.met.gov.my" target="_blank" rel="noopener">MET Malaysia</a>
+      <a href="https://publicinfobanjir.water.gov.my" target="_blank" rel="noopener">Public Infobanjir</a>
+      <a href="https://www.nadma.gov.my" target="_blank" rel="noopener">NADMA</a>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js?v=18"></script>
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>
